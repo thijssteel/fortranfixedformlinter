@@ -15,12 +15,20 @@ function getLastSplittingIndex(text: string, i1: number, i2: number): number {
 		return i2;
 	}
 
-	const splitterregex = /,|\+|\-|\*/;
+	const splitterregex = /,|\+|\-|\*/gm;
 	const slice = text.slice(i1,i2);
+
 
 	const matches = slice.match(splitterregex);
 	if(matches){
 		const index = slice.lastIndexOf(matches[matches.length-1]) + 1;
+
+		// Prefer splitting on comma instead of operators
+		const commaindex = slice.lastIndexOf(",") + 1;
+		if(commaindex !== -1 && Math.abs(index - commaindex) < 12){
+			return i1 + commaindex;
+		}
+
 		return i1 + index;
 	}
 
@@ -65,10 +73,10 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 					// Remove whitespace in some places
-					const commamatcher = /,\s+/g;
-					const definitionmatcher = /::\s\s+/g;
-					const plusmatcher = /(\s+\+\s*)|(\s*\+\s+)/g;
-					const minusmatcher = /(\s+\-\s*)|(\s*\-\s+)/g;
+					const commamatcher = /,\s+/gm;
+					const definitionmatcher = /::\s\s+/gm;
+					const plusmatcher = /(\s+\+\s*)|(\s*\+\s+)/gm;
+					const minusmatcher = /(\s+\-\s*)|(\s*\-\s+)/gm;
 					let hasBeenEdited = false;
 
 					let temp = fulllinetext;
