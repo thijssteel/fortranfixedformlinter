@@ -17,6 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.languages.registerDocumentFormattingEditProvider('fortran_fixed-form', {
 		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] | undefined {
+			const sourcematcher = /^(\s|\d)+/gm;
+			const continuationmatcher = /^(\s{5}(?=\S)([^0]))/gm;
+			let continuationsymbol = "$";
+
+
 			const edits: vscode.TextEdit[] = [];
 			let linestart = 0;
 			while (linestart < document.lineCount) {
@@ -24,13 +29,14 @@ export function activate(context: vscode.ExtensionContext) {
 				let fulllinetext = line.text.trim();
 				const indentation = line.firstNonWhitespaceCharacterIndex - 6;
 				let shouldbeformatted = line.text.length > 72;
-				if (!line.text.startsWith("*")) {
+				if (line.text.slice(0,5).match(sourcematcher)) {
 					let lineend = linestart;
 					let lastchar = line.range.end.character;
 					while (lineend + 1 < document.lineCount) {
 						line = document.lineAt(lineend + 1);
-						if (line.text.startsWith("     $")) {
+						if (line.text.slice(0,6).match(continuationmatcher)) {
 							// This line is a continuation line
+							continuationsymbol = line.text.charAt(5);
 							fulllinetext = fulllinetext + line.text.slice(6).trim();
 							lastchar = line.range.end.character;
 							lineend++;
@@ -47,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 						let formattedlinetext = padding(6 + indentation) + fulllinetext.slice(0, 72 - 6 - indentation);
 						let i = 72 - 6 - indentation;
 						while (i < fulllinetext.length) {
-							formattedlinetext = formattedlinetext + "\n     $" + padding(indentation + 3) +
+							formattedlinetext = formattedlinetext + "\n     " + continuationsymbol + padding(indentation + 3) +
 								fulllinetext.slice(i, i + (72 - 6 - indentation - 3));
 							i = i + (72 - 6 - indentation - 3);
 						}
