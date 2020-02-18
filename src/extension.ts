@@ -64,9 +64,25 @@ export function activate(context: vscode.ExtensionContext) {
 						}
 					}
 
+					const commamatcher = /,\s+/g;
+					const definitionmatcher = /::\s\s+/g;
+					let hasBeenEdited = false;
+
+					let tokens = fulllinetext.split(commamatcher);
+					if( tokens.length > 1 ){
+						hasBeenEdited = true;
+						fulllinetext = tokens.join(",");
+					}
+
+					tokens = fulllinetext.split(definitionmatcher);
+					if( tokens.length > 1 ){
+						hasBeenEdited = true;
+						fulllinetext = tokens.join(":: ");
+					}
+
 
 					// Only format for lines that exceed the limit
-					const shouldbeformatted = ( fulllinetext.length > 72 - 6 - indentation ) || lineend !== linestart;
+					const shouldbeformatted = ( fulllinetext.length > 72 - 6 - indentation ) || lineend !== linestart || hasBeenEdited;
 
 					if (shouldbeformatted) {
 

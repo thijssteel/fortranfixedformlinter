@@ -1,6 +1,6 @@
 # fixedformfortranlinter README
 
-Just a small extension that does some formatting for fixed form fortran. Right now it just automatically does line continuation for lines longer that 72 characters, but more features might be added in the future.
+Just a small extension that does some formatting for fixed form fortran.
 
 ## Known Issues
 
@@ -13,6 +13,10 @@ Users appreciate release notes as you update your extension.
 ### 0.0.1
 
 Initial release, features automatic line continuation
+
+### 0.0.2
+
+Also removes whitespace between function arguments
 
 -----------------------------------------------------------------------------------------------------------
 
