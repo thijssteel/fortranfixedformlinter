@@ -2,21 +2,29 @@
 
 Just a small extension that does some formatting for fixed form fortran.
 
+## Features
+
+If a line exceeds the 72 column limit, it will be split over two lines and a line continuation character is added. Some attempt at determining the line continuation character is made, with "$" taken as the default.
+
+If a line that is spread over multiple lines can be shortened, the formatter will do so.
+
+It also removes whitespace before and after ",", "+", "-" and "*". This is a stylistic choice, defended as follows: less characters -> less line continuations -> more readable code
+
 ## Known Issues
 
-Assumes indentation with spaces and and indentation size of 3
+Assumes indentation with spaces and and indentation size of 3, does not understand fortran so cannot do stuff like smart indentation or selective formatting.
+
+No option to disable the separate features is provided
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.2
+
+With this release, the formatter also removes whitespace between function arguments and operators.
 
 ### 0.0.1
 
-Initial release, features automatic line continuation
-
-### 0.0.2
-
-Also removes whitespace between function arguments
+Initial release, only features automatic line continuation.
 
 -----------------------------------------------------------------------------------------------------------
 
