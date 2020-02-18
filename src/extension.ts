@@ -10,6 +10,24 @@ function padding(n: number): string {
 	return pad;
 }
 
+function getLastSplittingIndex(text: string, i1: number, i2: number): number {
+	if(i2 > text.length){
+		return i2;
+	}
+
+	const splitterregex = /,|\+|\-|\*/;
+	const slice = text.slice(i1,i2);
+
+	const matches = slice.match(splitterregex);
+	if(matches){
+		const index = slice.lastIndexOf(matches[matches.length-1]) + 1;
+		return i1 + index;
+	}
+
+	return i2;
+}
+
+
 export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Fortran linter activated');
@@ -28,10 +46,11 @@ export function activate(context: vscode.ExtensionContext) {
 				let line = document.lineAt(linestart);
 				let fulllinetext = line.text.trim();
 				const indentation = line.firstNonWhitespaceCharacterIndex - 6;
-				let shouldbeformatted = line.text.length > 72;
 				if (line.text.slice(0,5).match(sourcematcher)) {
 					let lineend = linestart;
 					let lastchar = line.range.end.character;
+
+					// Determine the full line, including continuations
 					while (lineend + 1 < document.lineCount) {
 						line = document.lineAt(lineend + 1);
 						if (line.text.slice(0,6).match(continuationmatcher)) {
@@ -40,22 +59,25 @@ export function activate(context: vscode.ExtensionContext) {
 							fulllinetext = fulllinetext + line.text.slice(6).trim();
 							lastchar = line.range.end.character;
 							lineend++;
-							if (line.text.length > 72) {
-								shouldbeformatted = true;
-							}
 						} else {
 							break;
 						}
 					}
 
+
+					// Only format for lines that exceed the limit
+					const shouldbeformatted = ( fulllinetext.length > 72 - 6 - indentation ) || lineend !== linestart;
+
 					if (shouldbeformatted) {
 
-						let formattedlinetext = padding(6 + indentation) + fulllinetext.slice(0, 72 - 6 - indentation);
-						let i = 72 - 6 - indentation;
+						let i2 = getLastSplittingIndex(fulllinetext,0,72 - 6 - indentation);
+						let formattedlinetext = padding(6 + indentation) + fulllinetext.slice(0, i2);
+						let i = i2;
 						while (i < fulllinetext.length) {
+							i2 = getLastSplittingIndex(fulllinetext, i, i + (72 - 6 - indentation - 3));
 							formattedlinetext = formattedlinetext + "\n     " + continuationsymbol + padding(indentation + 3) +
-								fulllinetext.slice(i, i + (72 - 6 - indentation - 3));
-							i = i + (72 - 6 - indentation - 3);
+								fulllinetext.slice(i, i2);
+							i = i2;
 						}
 
 						edits.push(vscode.TextEdit.replace(new vscode.Range(
