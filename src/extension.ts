@@ -64,24 +64,24 @@ export function activate(context: vscode.ExtensionContext) {
 						}
 					}
 
+					// Remove whitespace in some places
 					const commamatcher = /,\s+/g;
 					const definitionmatcher = /::\s\s+/g;
+					const plusmatcher = /(\s+\+\s*)|(\s*\+\s+)/g;
+					const minusmatcher = /(\s+\-\s*)|(\s*\-\s+)/g;
 					let hasBeenEdited = false;
 
-					let tokens = fulllinetext.split(commamatcher);
-					if( tokens.length > 1 ){
-						hasBeenEdited = true;
-						fulllinetext = tokens.join(",");
-					}
+					let temp = fulllinetext;
+					temp = temp.replace(commamatcher, ",");
+					temp = temp.replace(definitionmatcher, ":: ");
+					temp = temp.replace(plusmatcher, "+");
+					temp = temp.replace(minusmatcher, "-");
 
-					tokens = fulllinetext.split(definitionmatcher);
-					if( tokens.length > 1 ){
-						hasBeenEdited = true;
-						fulllinetext = tokens.join(":: ");
-					}
+					hasBeenEdited = temp !== fulllinetext;
+					fulllinetext = temp;
 
 
-					// Only format for lines that exceed the limit
+					// Handle line continuations
 					const shouldbeformatted = ( fulllinetext.length > 72 - 6 - indentation ) || lineend !== linestart || hasBeenEdited;
 
 					if (shouldbeformatted) {
