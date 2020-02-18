@@ -1,5 +1,6 @@
 {
 	"name": "fixedformfortranlinter",
+	"publisher": "thijs",
 	"displayName": "fixedformfortranlinter",
 	"description": "a linter for fixed form fortran",
 	"version": "0.0.1",
@@ -33,5 +34,9 @@
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",
 		"vscode-test": "^1.3.0"
+	},
+	"repository": {
+	  "type": "git",
+	  "url": "https://https://github.com/thijssteel/fortranfixedformlinter.git"
 	}
 }
