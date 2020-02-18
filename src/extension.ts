@@ -2,40 +2,74 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-function padding(n: number): string{
+function padding(n: number): string {
 	let pad = "";
-	for(let i=0;i<n;i++){
+	for (let i = 0; i < n; i++) {
 		pad = pad + " ";
 	}
 	return pad;
 }
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Fortran linter activated');
-		
+
 
 	vscode.languages.registerDocumentFormattingEditProvider('fortran_fixed-form', {
 		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] | undefined {
-			for(let i=0;i<document.lineCount;i++){
-				const line = document.lineAt(i);
-				if(!line.text.startsWith("*")){
-					// Not a comment line
-					if(line.text.length > 72) {
-						return [
-							vscode.TextEdit.replace(line.range, line.text.slice(0,71)),
-							vscode.TextEdit.insert(line.range.end, "\n     $" + padding(line.firstNonWhitespaceCharacterIndex - 6) + line.text.slice(72)),
-						];
+			const edits: vscode.TextEdit[] = [];
+			let linestart = 0;
+			while (linestart < document.lineCount) {
+				let line = document.lineAt(linestart);
+				let fulllinetext = line.text.trim();
+				const indentation = line.firstNonWhitespaceCharacterIndex - 6;
+				let shouldbeformatted = line.text.length > 72;
+				if (!line.text.startsWith("*")) {
+					let lineend = linestart;
+					let lastchar = line.range.end.character;
+					while (lineend + 1 < document.lineCount) {
+						line = document.lineAt(lineend + 1);
+						if (line.text.startsWith("     $")) {
+							// This line is a continuation line
+							fulllinetext = fulllinetext + line.text.slice(6).trim();
+							lastchar = line.range.end.character;
+							lineend++;
+							if (line.text.length > 72) {
+								shouldbeformatted = true;
+							}
+						} else {
+							break;
+						}
 					}
+
+					if (shouldbeformatted) {
+
+						let formattedlinetext = padding(6 + indentation) + fulllinetext.slice(0, 72 - 6 - indentation);
+						let i = 72 - 6 - indentation;
+						while (i < fulllinetext.length) {
+							formattedlinetext = formattedlinetext + "\n     $" + padding(indentation + 3) +
+								fulllinetext.slice(i, i + (72 - 6 - indentation - 3));
+							i = i + (72 - 6 - indentation - 3);
+						}
+
+						edits.push(vscode.TextEdit.replace(new vscode.Range(
+							new vscode.Position(linestart, 0),
+							new vscode.Position(lineend, lastchar)
+						), formattedlinetext));
+
+					}
+
+					linestart = lineend + 1;
+				} else {
+					linestart++;
 				}
+
 			}
+
+			return edits;
 		}
 	});
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

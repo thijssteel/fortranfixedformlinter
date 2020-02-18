@@ -1,7 +1,9 @@
 *
-*    Test comment
+*     Test comment
 *
       do i=1,5
-         ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-     $   ff
+         111111111111111111111111111111111111111111111111111111111111222
+     $      333111111111111111111111111111111111111111111111111111111222
+     $      333111111111111111111111111111111111111111111111111111111222
+     $      line_end
       end do
