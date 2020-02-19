@@ -8,7 +8,10 @@
 		"vscode": "^1.42.0"
 	},
 	"categories": [
-		"Other"
+		"Formatters"
+	],
+	"keywords": [
+		"fortran","fixed form"
 	],
 	"activationEvents": [
 		"onLanguage:fortran_fixed-form"
@@ -37,6 +40,6 @@
 	},
 	"repository": {
 	  "type": "git",
-	  "url": "https://https://github.com/thijssteel/fortranfixedformlinter.git"
+	  "url": "https://github.com/thijssteel/fortranfixedformlinter.git"
 	}
 }
