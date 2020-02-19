@@ -16,6 +16,8 @@ Assumes indentation with spaces and and indentation size of 3, does not understa
 
 No option to disable the separate features is provided
 
+Only line continuations directly after the previous line are recognized
+
 ## Release Notes
 
 ### 0.0.2
