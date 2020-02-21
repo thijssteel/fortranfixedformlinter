@@ -10,6 +10,8 @@ If a line that is spread over multiple lines can be shortened, the formatter wil
 
 It also removes whitespace before and after ",", "+", "-" and "*". This is a stylistic choice, defended as follows: less characters -> less line continuations -> more readable code
 
+Lastly, some intrinsics will be converted from upper to lower case.
+
 ## Known Issues
 
 Assumes indentation with spaces and and indentation size of 3, does not understand fortran so cannot do stuff like smart indentation or selective formatting.
@@ -19,6 +21,10 @@ No option to disable the separate features is provided
 Only line continuations directly after the previous line are recognized
 
 ## Release Notes
+
+### 0.0.3
+
+With this release, the formatter also turns upper into lower case for some intrinsics.
 
 ### 0.0.2
 

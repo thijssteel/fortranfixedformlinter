@@ -73,17 +73,21 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 					// Remove whitespace in some places
+					let hasBeenEdited = false;
 					const commamatcher = /,\s+/gm;
 					const definitionmatcher = /::\s\s+/gm;
 					const plusmatcher = /(\s+\+\s*)|(\s*\+\s+)/gm;
 					const minusmatcher = /(\s+\-\s*)|(\s*\-\s+)/gm;
-					let hasBeenEdited = false;
 
 					let temp = fulllinetext;
 					temp = temp.replace(commamatcher, ",");
 					temp = temp.replace(definitionmatcher, ":: ");
 					temp = temp.replace(plusmatcher, "+");
 					temp = temp.replace(minusmatcher, "-");
+
+					// Make some intrinsics lower case
+					const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter)/gmi;
+					temp = temp.replace(intrinsicsmatcher, a => a.toLowerCase());
 
 					hasBeenEdited = temp !== fulllinetext;
 					fulllinetext = temp;

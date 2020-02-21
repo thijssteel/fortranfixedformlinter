@@ -3,7 +3,7 @@
 	"publisher": "thijs",
 	"displayName": "fixedformfortranlinter",
 	"description": "a linter for fixed form fortran",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.42.0"
 	},
