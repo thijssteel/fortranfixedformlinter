@@ -15,13 +15,14 @@ function getLastSplittingIndex(text: string, i1: number, i2: number): number {
 		return i2;
 	}
 
-	const splitterregex = /,|\+|\-|\*/gm;
+	const splitterregex = /,|\+|\-|\*|\.and\.|\.or\./gmi;
 	const slice = text.slice(i1,i2);
+
 
 
 	const matches = slice.match(splitterregex);
 	if(matches){
-		const index = slice.lastIndexOf(matches[matches.length-1]) + 1;
+		const index = slice.lastIndexOf(matches[matches.length-1]) + matches[matches.length-1].length;
 
 		// Prefer splitting on comma instead of operators
 		const commaindex = slice.lastIndexOf(",") + 1;
@@ -86,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 					temp = temp.replace(minusmatcher, "-");
 
 					// Make some intrinsics lower case
-					const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter)/gmi;
+					const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter|write)/gmi;
 					temp = temp.replace(intrinsicsmatcher, a => a.toLowerCase());
 
 					hasBeenEdited = temp !== fulllinetext;
