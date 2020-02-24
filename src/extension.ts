@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 					temp = temp.replace(minusmatcher, "-");
 
 					// Make some intrinsics lower case
-					const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter|write)/gmi;
+					const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter|write|call|read|if|end|stop|do|while|then)/gmi;
 					temp = temp.replace(intrinsicsmatcher, a => a.toLowerCase());
 
 					hasBeenEdited = temp !== fulllinetext;
