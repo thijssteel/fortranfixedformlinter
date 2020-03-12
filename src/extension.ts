@@ -55,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
 				let line = document.lineAt(linestart);
 				let fulllinetext = line.text.trim();
 				const indentation = line.firstNonWhitespaceCharacterIndex - 6;
-				if (line.text.slice(0,5).match(sourcematcher)) {
+				if (line.text.slice(0,5).match(sourcematcher) && !line.text.includes("!")) {
 					let lineend = linestart;
 					let lastchar = line.range.end.character;
 
