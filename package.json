@@ -3,7 +3,7 @@
 	"publisher": "thijs",
 	"displayName": "fixedformfortranlinter",
 	"description": "a linter for fixed form fortran",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"engines": {
 		"vscode": "^1.42.0"
 	},
@@ -11,7 +11,8 @@
 		"Formatters"
 	],
 	"keywords": [
-		"fortran","fixed form"
+		"fortran",
+		"fixed form"
 	],
 	"activationEvents": [
 		"onLanguage:fortran_fixed-form"
@@ -39,7 +40,7 @@
 		"vscode-test": "^1.3.0"
 	},
 	"repository": {
-	  "type": "git",
-	  "url": "https://github.com/thijssteel/fortranfixedformlinter.git"
+		"type": "git",
+		"url": "https://github.com/thijssteel/fortranfixedformlinter.git"
 	}
 }

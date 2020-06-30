@@ -8,9 +8,9 @@ If a line exceeds the 72 column limit, it will be split over two lines and a lin
 
 If a line that is spread over multiple lines can be shortened, the formatter will do so.
 
-It also removes whitespace before and after ",", "+", "-" and "*". This is a stylistic choice, defended as follows: less characters -> less line continuations -> more readable code
+It will add/remove whitespaces to ensure one whitespace character occurs after e.g. a comma.
 
-Lastly, some intrinsics will be converted from upper to lower case.
+Lastly, the code will be turned into upper case.
 
 ## Known Issues
 
@@ -21,6 +21,10 @@ No option to disable the separate features is provided
 Only line continuations directly after the previous line are recognized
 
 ## Release Notes
+
+### 0.0.4
+
+With this release, all code sections are turned into upper case for that sweet oldschool vibe
 
 ### 0.0.3
 

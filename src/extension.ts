@@ -75,20 +75,29 @@ export function activate(context: vscode.ExtensionContext) {
 
 					// Remove whitespace in some places
 					let hasBeenEdited = false;
-					const commamatcher = /,\s+/gm;
+					const commamatcher = /,\s*/gm;
 					const definitionmatcher = /::\s\s+/gm;
-					const plusmatcher = /(\s+\+\s*)|(\s*\+\s+)/gm;
-					const minusmatcher = /(\s+\-\s*)|(\s*\-\s+)/gm;
+					const plusmatcher = /(\s*\+\s*)/gm;
+					const minusmatcher = /(\s*\-\s*)/gm;
+					const timesmatcher = /(\s*\*\s*)/gm;
+					const leftbracketmatcher = /(\(\s*)/gm;
+					const rightbracketmatcher = /(\s*\))/gm;
 
 					let temp = fulllinetext;
-					temp = temp.replace(commamatcher, ",");
+					temp = temp.replace(commamatcher, ", ");
 					temp = temp.replace(definitionmatcher, ":: ");
-					temp = temp.replace(plusmatcher, "+");
-					temp = temp.replace(minusmatcher, "-");
+					temp = temp.replace(plusmatcher, " + ");
+					temp = temp.replace(minusmatcher, " - ");
+					temp = temp.replace(timesmatcher, " * ");
+					temp = temp.replace(leftbracketmatcher, "( ");
+					temp = temp.replace(rightbracketmatcher, " )");
 
-					// Make some intrinsics lower case
-					const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter|write|call|read|if|end|stop|do|while|then)/gmi;
-					temp = temp.replace(intrinsicsmatcher, a => a.toLowerCase());
+					// // Make some intrinsics lower case
+					// const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter|write|call|read|if|end|stop|do|while|then)/gmi;
+					// temp = temp.replace(intrinsicsmatcher, a => a.toLowerCase());
+
+					// make upper case
+					temp = temp.toUpperCase();
 
 					hasBeenEdited = temp !== fulllinetext;
 					fulllinetext = temp;
