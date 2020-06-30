@@ -79,7 +79,6 @@ export function activate(context: vscode.ExtensionContext) {
 					const definitionmatcher = /::\s\s+/gm;
 					const plusmatcher = /(\s*\+\s*)/gm;
 					const minusmatcher = /(\s*\-\s*)/gm;
-					const timesmatcher = /(\s*\*\s*)/gm;
 					const leftbracketmatcher = /(\(\s*)/gm;
 					const rightbracketmatcher = /(\s*\))/gm;
 
@@ -88,7 +87,6 @@ export function activate(context: vscode.ExtensionContext) {
 					temp = temp.replace(definitionmatcher, ":: ");
 					temp = temp.replace(plusmatcher, " + ");
 					temp = temp.replace(minusmatcher, " - ");
-					temp = temp.replace(timesmatcher, " * ");
 					temp = temp.replace(leftbracketmatcher, "( ");
 					temp = temp.replace(rightbracketmatcher, " )");
 
