@@ -81,14 +81,16 @@ export function activate(context: vscode.ExtensionContext) {
 					const minusmatcher = /(\s*\-\s*)/gm;
 					const leftbracketmatcher = /(\(\s*)/gm;
 					const rightbracketmatcher = /(\s*\))/gm;
+					const equalsmatcher = /(\s*=\s*)/gm;
 
 					let temp = fulllinetext;
+					temp = temp.replace(plusmatcher, "+");
+					temp = temp.replace(minusmatcher, "-");
 					temp = temp.replace(commamatcher, ", ");
 					temp = temp.replace(definitionmatcher, ":: ");
-					temp = temp.replace(plusmatcher, " + ");
-					temp = temp.replace(minusmatcher, " - ");
 					temp = temp.replace(leftbracketmatcher, "( ");
 					temp = temp.replace(rightbracketmatcher, " )");
+					temp = temp.replace(equalsmatcher, " = ");
 
 					// // Make some intrinsics lower case
 					// const intrinsicsmatcher = /(double|precision|complex|allocatable|integer|random_number|allocate|deallocate|module|program|parameter|write|call|read|if|end|stop|do|while|then)/gmi;
