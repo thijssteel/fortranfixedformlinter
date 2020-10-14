@@ -11,22 +11,22 @@ function padding(n: number): string {
 }
 
 function getLastSplittingIndex(text: string, i1: number, i2: number): number {
-	if(i2 > text.length){
+	if (i2 > text.length) {
 		return i2;
 	}
 
-	const splitterregex = /,|\+|\-|\*|\.and\.|\.or\./gmi;
-	const slice = text.slice(i1,i2);
+	const splitterregex = /,|\+|\-|\*|\.and\.|\.or\.|then/gmi;
+	const slice = text.slice(i1, i2);
 
 
 
 	const matches = slice.match(splitterregex);
-	if(matches){
-		const index = slice.lastIndexOf(matches[matches.length-1]) + matches[matches.length-1].length;
+	if (matches) {
+		const index = slice.lastIndexOf(matches[matches.length - 1]) + matches[matches.length - 1].length;
 
 		// Prefer splitting on comma instead of operators
 		const commaindex = slice.lastIndexOf(",") + 1;
-		if(commaindex !== -1 && Math.abs(index - commaindex) < 12){
+		if (commaindex !== -1 && Math.abs(index - commaindex) < 12) {
 			return i1 + commaindex;
 		}
 
@@ -34,6 +34,32 @@ function getLastSplittingIndex(text: string, i1: number, i2: number): number {
 	}
 
 	return i2;
+}
+
+function getAppropriateContinuationSpacing(line: string) {
+	const subroutinecallmatcher = /call|subroutine|function/gmi;
+	const declarationmatcher = /^\s*(double precision|real\([^\)]*\)|complex\([^\)]*\)|integer|parameter|external|intrinsic)\s*/gmi;
+	const declarationmatcher2 = /[a-z]/gmi;
+
+	if( line.match(subroutinecallmatcher) ){
+		//The line is a subroutine call, indent to the first argument
+		const index = line.indexOf('(');
+		if( index !== -1 ) {
+			return index+2;
+		}
+	}
+	let match = declarationmatcher.exec( line );
+	if( match && match.length > 0 ){
+		//The line is a group declaration, indent to first declared variable
+		const index1 = match.index;
+		const length = match[0].length;
+		let match2 = declarationmatcher2.exec( line.slice( index1 + length ) );
+		if( match2 && match2.length > 0 ) {
+			const index2 = match2.index;
+			return index1 + index2 + length;
+		}
+	}
+	return 3;
 }
 
 
@@ -55,14 +81,14 @@ export function activate(context: vscode.ExtensionContext) {
 				let line = document.lineAt(linestart);
 				let fulllinetext = line.text.trim();
 				const indentation = line.firstNonWhitespaceCharacterIndex - 6;
-				if (line.text.slice(0,5).match(sourcematcher) && !line.text.includes("!")) {
+				if (line.text.slice(0, 5).match(sourcematcher) && !line.text.includes("!")) {
 					let lineend = linestart;
 					let lastchar = line.range.end.character;
 
 					// Determine the full line, including continuations
 					while (lineend + 1 < document.lineCount) {
 						line = document.lineAt(lineend + 1);
-						if (line.text.slice(0,6).match(continuationmatcher)) {
+						if (line.text.slice(0, 6).match(continuationmatcher)) {
 							// This line is a continuation line
 							continuationsymbol = line.text.charAt(5);
 							fulllinetext = fulllinetext + line.text.slice(6).trim();
@@ -73,19 +99,19 @@ export function activate(context: vscode.ExtensionContext) {
 						}
 					}
 
-					// Remove whitespace in some places
+					// Add whitespace in some places
 					let hasBeenEdited = false;
 					const commamatcher = /,\s*/gm;
 					const definitionmatcher = /::\s\s+/gm;
-					const plusmatcher = /(\s*\+\s*)/gm;
-					const minusmatcher = /(\s*\-\s*)/gm;
+					const plusmatcher = /(?!([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?))(\s*\+\s*)/gm;
+					const minusmatcher = /(?!([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?))(\s*\-\s*)/gm;
 					const leftbracketmatcher = /(\(\s*)/gm;
 					const rightbracketmatcher = /(\s*\))/gm;
 					const equalsmatcher = /(\s*=\s*)/gm;
 
 					let temp = fulllinetext;
-					temp = temp.replace(plusmatcher, "+");
-					temp = temp.replace(minusmatcher, "-");
+					// temp = temp.replace(plusmatcher, " + ");
+					// temp = temp.replace(minusmatcher, " - ");
 					temp = temp.replace(commamatcher, ", ");
 					temp = temp.replace(definitionmatcher, ":: ");
 					temp = temp.replace(leftbracketmatcher, "( ");
@@ -104,17 +130,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 					// Handle line continuations
-					const shouldbeformatted = ( fulllinetext.length > 72 - 6 - indentation ) || lineend !== linestart || hasBeenEdited;
+					const shouldbeformatted = (fulllinetext.length > 72 - 6 - indentation) || lineend !== linestart || hasBeenEdited;
 
 					if (shouldbeformatted) {
 
-						let i2 = getLastSplittingIndex(fulllinetext,0,72 - 6 - indentation);
+						let i2 = getLastSplittingIndex(fulllinetext, 0, 72 - 6 - indentation);
 						let formattedlinetext = padding(6 + indentation) + fulllinetext.slice(0, i2);
 						let i = i2;
+						const extraindent = getAppropriateContinuationSpacing(fulllinetext);
 						while (i < fulllinetext.length) {
-							i2 = getLastSplittingIndex(fulllinetext, i, i + (72 - 6 - indentation - 3));
-							formattedlinetext = formattedlinetext + "\n     " + continuationsymbol + padding(indentation + 3) +
-								fulllinetext.slice(i, i2);
+							i2 = getLastSplittingIndex(fulllinetext, i, i + (72 - 6 - indentation - extraindent));
+							formattedlinetext = formattedlinetext + "\n     " + continuationsymbol + padding(indentation + extraindent) +
+								fulllinetext.slice(i, i2).trim();
 							i = i2;
 						}
 
